@@ -1,5 +1,5 @@
 import {nanoid} from 'nanoid'
-type IncomingWebsocketRequestMessage = {
+export type IncomingWebsocketRequestMessage = {
     messageId: string
     status: 'RUNNING'|'ERROR'|'COMPLETE'
     payload: Record<string, any>
