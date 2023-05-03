@@ -27,6 +27,7 @@ export class SocketioClient{
         payload: Record<string, any>, 
         handleUpdateMessage?: (payload: UpdatePayload)=>void
     ): Promise<R> => {
+        await this.connected
         const messageId = nanoid()
         return new Promise<R>((resolve, reject) => {
             this.socket.on(messageId, (data: IncomingWebsocketRequestMessage) => {

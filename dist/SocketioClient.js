@@ -11,6 +11,7 @@ class SocketioClient {
             this.socket.emit(action, payload);
         };
         this.fetch = async (action, payload, handleUpdateMessage) => {
+            await this.connected;
             const messageId = (0, nanoid_1.nanoid)();
             return new Promise((resolve, reject) => {
                 this.socket.on(messageId, (data) => {
