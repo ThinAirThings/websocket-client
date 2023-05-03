@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client"
-import { rxToTx } from "./txTx"
+import { rxToTx } from "./txRx"
 
 export class WebsocketClient{
     socket: Socket
