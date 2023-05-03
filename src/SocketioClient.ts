@@ -6,7 +6,7 @@ import { IncomingWebsocketRequestMessage } from "./websocketFetch"
 export class SocketioClient{
     socket: Socket
     connected: Promise<void>
-    constructor(url: string, actions: Record<string, any>){
+    constructor(url: string, actions: Record<string, (payload: any)=>void>){
         this.socket = io(url)
         this.connected = new Promise((resolve) => {
             this.socket.on('connect', () => {
