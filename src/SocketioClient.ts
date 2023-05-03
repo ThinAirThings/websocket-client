@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client"
 import { rxToTx } from "./txRx"
 
-export class WebsocketClient{
+export class SocketioClient{
     socket: Socket
     connected: Promise<void>
     constructor(url: string, actions: Record<string, any>){

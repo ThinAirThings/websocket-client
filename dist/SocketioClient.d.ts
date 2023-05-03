@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-export declare class WebsocketClient {
+export declare class SocketioClient {
     socket: Socket;
     connected: Promise<void>;
     constructor(url: string, actions: Record<string, any>);

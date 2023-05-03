@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WebsocketClient = void 0;
+exports.SocketioClient = void 0;
 const socket_io_client_1 = require("socket.io-client");
 const txRx_1 = require("./txRx");
-class WebsocketClient {
+class SocketioClient {
     constructor(url, actions) {
         this.sendMessage = async (action, payload) => {
             await this.connected;
@@ -21,4 +21,4 @@ class WebsocketClient {
         }
     }
 }
-exports.WebsocketClient = WebsocketClient;
+exports.SocketioClient = SocketioClient;
