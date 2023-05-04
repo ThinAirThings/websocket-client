@@ -15,6 +15,7 @@ class SocketioClient {
             const messageId = (0, nanoid_1.nanoid)();
             return new Promise((resolve, reject) => {
                 this.socket.on(messageId, (data) => {
+                    console.log("Received data from server", data);
                     if (!data.status || data.status === 'COMPLETE') {
                         resolve(data.payload);
                     }

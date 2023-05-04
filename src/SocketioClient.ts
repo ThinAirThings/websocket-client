@@ -31,6 +31,7 @@ export class SocketioClient{
         const messageId = nanoid()
         return new Promise<Record<string, unknown>>((resolve, reject) => {
             this.socket.on(messageId, (data: IncomingWebsocketRequestMessage) => {
+                console.log("Received data from server", data)
                 if (!data.status || data.status === 'COMPLETE') {
                     resolve(data.payload)
                 } else if (data.status === 'RUNNING') {
