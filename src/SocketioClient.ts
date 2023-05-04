@@ -24,24 +24,19 @@ export class SocketioClient{
     }
     fetch = async <UpdatePayload extends Record<string, any>=Record<string, any>>(
         action: string, 
-        payload?: Record<string, any>, 
-        handleUpdateMessage?: (payload: UpdatePayload)=>void
+        txPayload?: Record<string, any>, 
+        handleUpdateMessage?: (rxPayload: UpdatePayload)=>void
     ): Promise<Record<string, unknown>> => {
-        console.log("Above connected")
         await this.connected
-        console.log("Below connected")
         const messageId = nanoid()
-        console.log(messageId)
-        console.log(payload)
         return new Promise<Record<string, unknown>>((resolve, reject) => {
-            this.socket.on(messageId, (data: IncomingWebsocketRequestMessage) => {
-                console.log("Received data from server", data)
-                if (!data.status || data.status === 'COMPLETE') {
-                    resolve(data.payload)
-                } else if (data.status === 'RUNNING') {
-                    handleUpdateMessage?.(data.payload as UpdatePayload)
-                } else if (data.status === 'ERROR') {
-                    reject(data.payload)
+            this.socket.on(messageId, (rxMessage: IncomingWebsocketRequestMessage) => {
+                if (!rxMessage.status || rxMessage.status === 'COMPLETE') {
+                    resolve(rxMessage.payload)
+                } else if (rxMessage.status === 'RUNNING') {
+                    handleUpdateMessage?.(rxMessage.payload as UpdatePayload)
+                } else if (rxMessage.status === 'ERROR') {
+                    reject(rxMessage.payload)
                 } else {
                     reject('Unknown data format')
                 }
@@ -49,7 +44,7 @@ export class SocketioClient{
             this.socket.emit(action, {
                 action,
                 messageId,
-                ...payload
+                ...txPayload
             })
         })
     }

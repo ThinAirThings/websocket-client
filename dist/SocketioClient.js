@@ -10,24 +10,19 @@ class SocketioClient {
             await this.connected;
             this.socket.emit(action, payload);
         };
-        this.fetch = async (action, payload, handleUpdateMessage) => {
-            console.log("Above connected");
+        this.fetch = async (action, txPayload, handleUpdateMessage) => {
             await this.connected;
-            console.log("Below connected");
             const messageId = (0, nanoid_1.nanoid)();
-            console.log(messageId);
-            console.log(payload);
             return new Promise((resolve, reject) => {
-                this.socket.on(messageId, (data) => {
-                    console.log("Received data from server", data);
-                    if (!data.status || data.status === 'COMPLETE') {
-                        resolve(data.payload);
+                this.socket.on(messageId, (rxMessage) => {
+                    if (!rxMessage.status || rxMessage.status === 'COMPLETE') {
+                        resolve(rxMessage.payload);
                     }
-                    else if (data.status === 'RUNNING') {
-                        handleUpdateMessage?.(data.payload);
+                    else if (rxMessage.status === 'RUNNING') {
+                        handleUpdateMessage?.(rxMessage.payload);
                     }
-                    else if (data.status === 'ERROR') {
-                        reject(data.payload);
+                    else if (rxMessage.status === 'ERROR') {
+                        reject(rxMessage.payload);
                     }
                     else {
                         reject('Unknown data format');
@@ -36,7 +31,7 @@ class SocketioClient {
                 this.socket.emit(action, {
                     action,
                     messageId,
-                    ...payload
+                    ...txPayload
                 });
             });
         };
