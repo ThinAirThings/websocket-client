@@ -13,6 +13,8 @@ class SocketioClient {
         this.fetch = async (action, payload, handleUpdateMessage) => {
             await this.connected;
             const messageId = (0, nanoid_1.nanoid)();
+            console.log(messageId);
+            console.log(payload);
             return new Promise((resolve, reject) => {
                 this.socket.on(messageId, (data) => {
                     console.log("Received data from server", data);

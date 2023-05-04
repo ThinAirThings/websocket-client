@@ -29,6 +29,8 @@ export class SocketioClient{
     ): Promise<Record<string, unknown>> => {
         await this.connected
         const messageId = nanoid()
+        console.log(messageId)
+        console.log(payload)
         return new Promise<Record<string, unknown>>((resolve, reject) => {
             this.socket.on(messageId, (data: IncomingWebsocketRequestMessage) => {
                 console.log("Received data from server", data)
