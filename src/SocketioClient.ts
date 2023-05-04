@@ -22,7 +22,7 @@ export class SocketioClient{
         await this.connected
         this.socket.emit(action, payload)
     }
-    fetch = async <R=Record<string, any>, UpdatePayload extends Record<string, any>=Record<string, any>>(
+    fetch = async <R=Record<string, unknown>, UpdatePayload extends Record<string, any>=Record<string, any>>(
         action: string, 
         payload: Record<string, any>, 
         handleUpdateMessage?: (payload: UpdatePayload)=>void
