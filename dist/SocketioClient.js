@@ -6,6 +6,9 @@ const txRx_1 = require("./txRx");
 const nanoid_1 = require("nanoid");
 class SocketioClient {
     constructor(url, actions) {
+        this.addAction = (action, callback) => {
+            this.socket.on((0, txRx_1.rxToTx)(action), callback);
+        };
         this.sendMessage = async (action, payload) => {
             await this.connected;
             this.socket.emit(action, payload);

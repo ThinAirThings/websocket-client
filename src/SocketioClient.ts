@@ -18,6 +18,9 @@ export class SocketioClient{
             this.socket.on(rxToTx(action), callback)
         }
     }
+    addAction = (action: string, callback: (payload: any)=>void) => {
+        this.socket.on(rxToTx(action), callback)
+    }
     sendMessage = async (action: string, payload: Record<string, any>) => {
         await this.connected
         this.socket.emit(action, payload)
