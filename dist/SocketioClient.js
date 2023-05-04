@@ -9,6 +9,11 @@ class SocketioClient {
         this.addAction = (action, callback) => {
             this.socket.on((0, txRx_1.rxToTx)(action), callback);
         };
+        this.addActions = (actions) => {
+            for (const [action, callback] of Object.entries(actions)) {
+                this.socket.on((0, txRx_1.rxToTx)(action), callback);
+            }
+        };
         this.sendMessage = async (action, payload) => {
             await this.connected;
             this.socket.emit(action, payload);
@@ -45,9 +50,7 @@ class SocketioClient {
                 resolve();
             });
         });
-        for (const [action, callback] of Object.entries(actions)) {
-            this.socket.on((0, txRx_1.rxToTx)(action), callback);
-        }
+        this.addActions(actions);
     }
 }
 exports.SocketioClient = SocketioClient;

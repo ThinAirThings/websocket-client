@@ -14,12 +14,15 @@ export class SocketioClient{
                 resolve()
             })
         })
-        for (const [action, callback] of Object.entries(actions)){
-            this.socket.on(rxToTx(action), callback)
-        }
+        this.addActions(actions)
     }
     addAction = (action: string, callback: (payload: any)=>void) => {
         this.socket.on(rxToTx(action), callback)
+    }
+    addActions = (actions: Record<string, (payload: any)=>void>) => {
+        for (const [action, callback] of Object.entries(actions)){
+            this.socket.on(rxToTx(action), callback)
+        }
     }
     sendMessage = async (action: string, payload: Record<string, any>) => {
         await this.connected
