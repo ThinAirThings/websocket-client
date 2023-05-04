@@ -27,7 +27,9 @@ export class SocketioClient{
         payload?: Record<string, any>, 
         handleUpdateMessage?: (payload: UpdatePayload)=>void
     ): Promise<Record<string, unknown>> => {
+        console.log("Above connected")
         await this.connected
+        console.log("Below connected")
         const messageId = nanoid()
         console.log(messageId)
         console.log(payload)

@@ -11,7 +11,9 @@ class SocketioClient {
             this.socket.emit(action, payload);
         };
         this.fetch = async (action, payload, handleUpdateMessage) => {
+            console.log("Above connected");
             await this.connected;
+            console.log("Below connected");
             const messageId = (0, nanoid_1.nanoid)();
             console.log(messageId);
             console.log(payload);
