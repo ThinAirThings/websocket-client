@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client"
-import { rxToTx } from "./txRx"
+import { rxToTx } from "../../shared/txRx"
 import { nanoid } from "nanoid"
 import { IncomingWebsocketRequestMessage } from "./websocketFetch"
 
@@ -24,7 +24,7 @@ export class SocketioClient{
             this.socket.on(rxToTx(action), callback)
         }
     }
-    sendMessage = async (action: string, payload: Record<string, any>) => {
+    sendMessage = async (action: string, payload?: Record<string, any>) => {
         await this.connected
         this.socket.emit(action, payload)
     }
