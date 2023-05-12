@@ -5,7 +5,7 @@ export type IncomingWebsocketRequestMessage = {
     payload: Record<string, any>
 }
 
-export const websocketFetch = async <R=Record<string, any>, UpdatePayload extends Record<string, any>=Record<string, any>>({
+export const websocketFetch = async <UpdatePayload extends Record<string, any>=Record<string, any>>({
     url,
     action, 
     payload, 
@@ -15,9 +15,9 @@ export const websocketFetch = async <R=Record<string, any>, UpdatePayload extend
     action: string, 
     payload?: Record<string, any>, 
     handleUpdateMessage?: (payload: UpdatePayload)=>void
-}): Promise<R> => {
+}): Promise<Record<string, unknown>> => {
     const messageId = nanoid()
-    return new Promise<R>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const websocket = new WebSocket(url)
         websocket.onopen = () => {
             websocket.onmessage = (event) => {
@@ -26,7 +26,7 @@ export const websocketFetch = async <R=Record<string, any>, UpdatePayload extend
                     if (data.status === 'RUNNING') {
                         handleUpdateMessage?.(data.payload as UpdatePayload)
                     } else if (data.status === 'COMPLETE') {
-                        resolve(data.payload as R)
+                        resolve(data.payload)
                         websocket.close()
                     } else if (data.status === 'ERROR') {
                         reject(data.payload)

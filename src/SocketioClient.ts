@@ -35,7 +35,7 @@ export class SocketioClient{
     ): Promise<Record<string, unknown>> => {
         await this.connected
         const messageId = nanoid()
-        return new Promise<Record<string, unknown>>((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this.socket.on(messageId, (rxMessage: IncomingWebsocketRequestMessage) => {
                 if (!rxMessage.status || rxMessage.status === 'COMPLETE') {
                     resolve(rxMessage.payload)
