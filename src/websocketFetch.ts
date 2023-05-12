@@ -5,12 +5,17 @@ export type IncomingWebsocketRequestMessage = {
     payload: Record<string, any>
 }
 
-export const websocketFetch = async <R=Record<string, any>, UpdatePayload extends Record<string, any>=Record<string, any>>(
+export const websocketFetch = async <R=Record<string, any>, UpdatePayload extends Record<string, any>=Record<string, any>>({
+    url,
+    action, 
+    payload, 
+    handleUpdateMessage
+}: {
     url: string, 
     action: string, 
-    payload: Record<string, any>, 
+    payload?: Record<string, any>, 
     handleUpdateMessage?: (payload: UpdatePayload)=>void
-): Promise<R> => {
+}): Promise<R> => {
     const messageId = nanoid()
     return new Promise<R>((resolve, reject) => {
         const websocket = new WebSocket(url)

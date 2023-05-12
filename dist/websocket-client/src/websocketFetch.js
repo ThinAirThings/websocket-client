@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.websocketFetch = void 0;
 const nanoid_1 = require("nanoid");
-const websocketFetch = async (url, action, payload, handleUpdateMessage) => {
+const websocketFetch = async ({ url, action, payload, handleUpdateMessage }) => {
     const messageId = (0, nanoid_1.nanoid)();
     return new Promise((resolve, reject) => {
         const websocket = new WebSocket(url);
