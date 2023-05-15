@@ -22,6 +22,7 @@ export const websocketFetch = async <UpdatePayload extends Record<string, any>=R
         websocket.onopen = () => {
             websocket.onmessage = (event) => {
                 const data = JSON.parse(event.data) as IncomingWebsocketRequestMessage
+                console.log(data)
                 if (data.messageId === messageId) {
                     if (data.status === 'RUNNING') {
                         handleUpdateMessage?.(data.payload as UpdatePayload)
