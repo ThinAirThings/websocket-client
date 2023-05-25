@@ -50,7 +50,7 @@ class SocketioClient {
                 resolve();
             });
         });
-        this.addActions(actions);
+        this.addActions(actions ?? {});
     }
 }
 exports.SocketioClient = SocketioClient;
