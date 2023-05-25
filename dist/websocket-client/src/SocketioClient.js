@@ -9,6 +9,9 @@ class SocketioClient {
         this.addAction = (action, callback) => {
             this.socket.on((0, txRx_1.rxToTx)(action), callback);
         };
+        this.removeAction = (action, callback) => {
+            this.socket.off((0, txRx_1.rxToTx)(action), callback);
+        };
         this.addActions = (actions) => {
             for (const [action, callback] of Object.entries(actions)) {
                 this.socket.on((0, txRx_1.rxToTx)(action), callback);

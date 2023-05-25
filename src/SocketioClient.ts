@@ -19,6 +19,9 @@ export class SocketioClient{
     addAction = (action: string, callback: (payload: any)=>void) => {
         this.socket.on(rxToTx(action), callback)
     }
+    removeAction = (action: string, callback: (payload: any)=>void) => {
+        this.socket.off(rxToTx(action), callback)
+    }
     addActions = (actions: Record<string, (payload: any)=>void>) => {
         for (const [action, callback] of Object.entries(actions)){
             this.socket.on(rxToTx(action), callback)
