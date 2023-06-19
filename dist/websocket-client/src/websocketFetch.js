@@ -9,7 +9,6 @@ const websocketFetch = async ({ url, action, payload, handleUpdateMessage }) => 
         websocket.onopen = () => {
             websocket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
-                console.log(data);
                 if (data.messageId === messageId) {
                     if (data.status === 'RUNNING') {
                         handleUpdateMessage?.(data.payload);
