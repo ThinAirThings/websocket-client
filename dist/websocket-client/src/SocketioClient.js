@@ -49,7 +49,6 @@ class SocketioClient {
         this.socket = (0, socket_io_client_1.io)(url);
         this.connected = new Promise((resolve) => {
             this.socket.on('connect', () => {
-                console.log(`Client Connected to: ${url}`);
                 resolve();
             });
         });

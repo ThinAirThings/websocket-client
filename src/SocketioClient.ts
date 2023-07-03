@@ -10,7 +10,6 @@ export class SocketioClient{
         this.socket = io(url)
         this.connected = new Promise((resolve) => {
             this.socket.on('connect', () => {
-                console.log(`Client Connected to: ${url}`)
                 resolve()
             })
         })
