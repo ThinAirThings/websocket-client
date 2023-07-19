@@ -1,7 +1,7 @@
 import { Socket } from "socket.io-client";
 export declare class SocketioClient {
     socket: Socket;
-    connected: Promise<void>;
+    connected: Promise<boolean>;
     constructor(url: string, actions?: Record<string, (payload: any) => void>);
     addAction: (action: string, callback: (payload: any) => void) => void;
     removeAction: (action: string, callback: (payload: any) => void) => void;

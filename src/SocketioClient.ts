@@ -5,16 +5,26 @@ import { IncomingWebsocketRequestMessage } from "./websocketFetch"
 
 export class SocketioClient{
     socket: Socket
-    connected: Promise<void>
+    connected: Promise<boolean>
     constructor(url: string, actions?: Record<string, (payload: any)=>void>){
         this.socket = io(url)
-        this.connected = new Promise((resolve) => {
-            this.socket.on('connect', () => {
-                resolve()
+        this.connected = new Promise<boolean>((resolve) => {
+            let resolver = () => resolve(true)
+            this.socket.on('connect', resolver)
+            this.socket.on('connect_error', () => {
+                this.connected = new Promise<boolean>((resolve) => {
+                    this.socket.off('connect', resolver)
+                    resolver = () => resolve(true)
+                    setTimeout(() => {
+                        this.socket.on('connect', resolver)
+                        this.socket.connect()
+                    }, 1000);
+                })
             })
         })
         this.addActions(actions??{})
     }
+
     addAction = (action: string, callback: (payload: any)=>void) => {
         this.socket.on(rxToTx(action), callback)
     }
