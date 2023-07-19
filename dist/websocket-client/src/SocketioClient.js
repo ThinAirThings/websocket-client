@@ -6,23 +6,22 @@ const txRx_1 = require("../../shared/txRx");
 const nanoid_1 = require("nanoid");
 class SocketioClient {
     constructor(url, actions) {
-        this.createSocket = (url, actions) => {
-            const socket = (0, socket_io_client_1.io)(url);
+        this.initializeSocket = (url, actions) => {
+            this.socket = (0, socket_io_client_1.io)(url);
             this.connected = new Promise((resolve) => {
                 this.socket.on('connect', () => resolve(true));
                 this.socket.on('connect_error', () => {
                     setTimeout(() => {
-                        this.socket = this.createSocket(url, actions);
+                        this.initializeSocket(url, actions);
                     }, 5000);
                 });
                 this.socket.on('disconnect', () => {
                     setTimeout(() => {
-                        this.socket = this.createSocket(url, actions);
+                        this.initializeSocket(url, actions);
                     }, 5000);
                 });
             });
-            this.addActions(socket, actions ?? {});
-            return socket;
+            this.addActions(actions ?? {});
         };
         this.addAction = (action, callback) => {
             this.socket.on((0, txRx_1.rxToTx)(action), callback);
@@ -30,9 +29,9 @@ class SocketioClient {
         this.removeAction = (action, callback) => {
             this.socket.off((0, txRx_1.rxToTx)(action), callback);
         };
-        this.addActions = (socket, actions) => {
+        this.addActions = (actions) => {
             for (const [action, callback] of Object.entries(actions)) {
-                socket.on((0, txRx_1.rxToTx)(action), callback);
+                this.socket.on((0, txRx_1.rxToTx)(action), callback);
             }
         };
         this.sendMessage = async (action, payload) => {
@@ -64,7 +63,7 @@ class SocketioClient {
                 });
             });
         };
-        this.socket = this.createSocket(url, actions);
+        this.initializeSocket(url, actions);
     }
 }
 exports.SocketioClient = SocketioClient;

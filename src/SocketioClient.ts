@@ -4,28 +4,27 @@ import { nanoid } from "nanoid"
 import { IncomingWebsocketRequestMessage } from "./websocketFetch"
 
 export class SocketioClient{
-    socket: Socket
+    socket!: Socket
     connected!: Promise<boolean>
     constructor(url: string, actions?: Record<string, (payload: any)=>void>){
-        this.socket = this.createSocket(url, actions)
+        this.initializeSocket(url, actions)
     }
-    createSocket = (url: string, actions?: Record<string, (payload: any)=>void>) => {
-        const socket = io(url)
+    initializeSocket = (url: string, actions?: Record<string, (payload: any)=>void>) => {
+        this.socket = io(url)
         this.connected = new Promise<boolean>((resolve) => {
             this.socket.on('connect', () => resolve(true))
             this.socket.on('connect_error', () => {
                 setTimeout(() => {
-                    this.socket = this.createSocket(url, actions)
+                    this.initializeSocket(url, actions)
                 }, 5000)
             })
             this.socket.on('disconnect', () => {
                 setTimeout(() => {
-                    this.socket = this.createSocket(url, actions)
+                    this.initializeSocket(url, actions)
                 }, 5000)
             })
         })
-        this.addActions(socket, actions??{})
-        return socket
+        this.addActions(actions??{})
     }
 
     addAction = (action: string, callback: (payload: any)=>void) => {
@@ -34,9 +33,9 @@ export class SocketioClient{
     removeAction = (action: string, callback: (payload: any)=>void) => {
         this.socket.off(rxToTx(action), callback)
     }
-    addActions = (socket: Socket, actions: Record<string, (payload: any)=>void>) => {
+    addActions = (actions: Record<string, (payload: any)=>void>) => {
         for (const [action, callback] of Object.entries(actions)){
-            socket.on(rxToTx(action), callback)
+            this.socket.on(rxToTx(action), callback)
         }
     }
     sendMessage = async (action: string, payload?: Record<string, any>) => {
