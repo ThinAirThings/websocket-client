@@ -3,6 +3,8 @@ export declare class SocketioClient {
     socket: Socket;
     connected: Promise<boolean>;
     constructor(url: string, actions?: Record<string, (payload: any) => void>);
+    connect: () => void;
+    retryConnection: () => void;
     addAction: (action: string, callback: (payload: any) => void) => void;
     removeAction: (action: string, callback: (payload: any) => void) => void;
     addActions: (actions: Record<string, (payload: any) => void>) => void;

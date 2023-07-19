@@ -5,27 +5,42 @@ import { IncomingWebsocketRequestMessage } from "./websocketFetch"
 
 export class SocketioClient{
     socket: Socket
-    connected: Promise<boolean>
+    connected!: Promise<boolean>
     constructor(url: string, actions?: Record<string, (payload: any)=>void>){
         this.socket = io(url)
-        this.connected = new Promise<boolean>((resolve) => {
-            let resolver = () => resolve(true)
-            this.socket.on('connect', resolver)
-            this.socket.on('connect_error', (err) => {
-                console.log("Connection Error Occurred", err)
-                this.connected = new Promise<boolean>((resolve) => {
-                    this.socket.off('connect', resolver)
-                    resolver = () => resolve(true)
-                    setTimeout(() => {
-                        this.socket.on('connect', resolver)
-                        this.socket.connect()
-                    }, 1000);
-                })
-            })
-        })
+        this.connect()
         this.addActions(actions??{})
     }
+    connect = () => {
+        this.connected = new Promise((resolve, reject) => {
+            const connectListener = () => {
+                this.socket.off('connect_error', errorListener);
+                this.socket.off('disconnect', disconnectListener);
+                resolve(true);
+            };
+            const errorListener = (err: Error) => {
+                console.log("Connection Error Occurred", err);
+                this.retryConnection();
+            };
+            const disconnectListener = () => {
+                console.log("Connection lost");
+                this.retryConnection();
+            };
 
+            this.socket.on('connect', connectListener);
+            this.socket.on('connect_error', errorListener);
+            this.socket.on('disconnect', disconnectListener);
+        });
+    }
+    retryConnection = () => {
+        this.socket.off('connect');
+        this.socket.off('connect_error');
+        this.socket.off('disconnect');
+        setTimeout(() => {
+            console.log("Retrying connection");
+            this.connect();
+        }, 1000);
+    }
     addAction = (action: string, callback: (payload: any)=>void) => {
         this.socket.on(rxToTx(action), callback)
     }
