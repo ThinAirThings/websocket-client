@@ -18,6 +18,7 @@ class SocketioClient {
                 this.socket.on('disconnect', () => {
                     console.log("Disconnected");
                     setTimeout(() => {
+                        console.log("Reconnecting");
                         this.initializeSocket(url, actions);
                     }, 5000);
                 });
