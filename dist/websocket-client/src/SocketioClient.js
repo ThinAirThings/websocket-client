@@ -6,34 +6,23 @@ const txRx_1 = require("../../shared/txRx");
 const nanoid_1 = require("nanoid");
 class SocketioClient {
     constructor(url, actions) {
-        this.connect = () => {
-            this.connected = new Promise((resolve, reject) => {
-                const connectListener = () => {
-                    this.socket.off('connect_error', errorListener);
-                    this.socket.off('disconnect', disconnectListener);
-                    resolve(true);
-                };
-                const errorListener = (err) => {
-                    console.log("Connection Error Occurred", err);
-                    this.retryConnection();
-                };
-                const disconnectListener = () => {
-                    console.log("Connection lost");
-                    this.retryConnection();
-                };
-                this.socket.on('connect', connectListener);
-                this.socket.on('connect_error', errorListener);
-                this.socket.on('disconnect', disconnectListener);
+        this.createSocket = (url, actions) => {
+            const socket = (0, socket_io_client_1.io)(url);
+            this.connected = new Promise((resolve) => {
+                this.socket.on('connect', () => resolve(true));
+                this.socket.on('connect_error', () => {
+                    setTimeout(() => {
+                        this.socket = this.createSocket(url, actions);
+                    }, 5000);
+                });
+                this.socket.on('disconnect', () => {
+                    setTimeout(() => {
+                        this.socket = this.createSocket(url, actions);
+                    }, 5000);
+                });
             });
-        };
-        this.retryConnection = () => {
-            this.socket.off('connect');
-            this.socket.off('connect_error');
-            this.socket.off('disconnect');
-            setTimeout(() => {
-                console.log("Retrying connection");
-                this.connect();
-            }, 1000);
+            this.addActions(socket, actions ?? {});
+            return socket;
         };
         this.addAction = (action, callback) => {
             this.socket.on((0, txRx_1.rxToTx)(action), callback);
@@ -41,9 +30,9 @@ class SocketioClient {
         this.removeAction = (action, callback) => {
             this.socket.off((0, txRx_1.rxToTx)(action), callback);
         };
-        this.addActions = (actions) => {
+        this.addActions = (socket, actions) => {
             for (const [action, callback] of Object.entries(actions)) {
-                this.socket.on((0, txRx_1.rxToTx)(action), callback);
+                socket.on((0, txRx_1.rxToTx)(action), callback);
             }
         };
         this.sendMessage = async (action, payload) => {
@@ -75,9 +64,7 @@ class SocketioClient {
                 });
             });
         };
-        this.socket = (0, socket_io_client_1.io)(url);
-        this.connect();
-        this.addActions(actions ?? {});
+        this.socket = this.createSocket(url, actions);
     }
 }
 exports.SocketioClient = SocketioClient;
