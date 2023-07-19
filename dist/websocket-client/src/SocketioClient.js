@@ -10,10 +10,8 @@ class SocketioClient {
         this.reconnect = () => {
             this.connected = new Promise((resolve) => {
                 this.socket.off('connect');
-                this.removeActions(this.actions);
                 setTimeout(() => {
                     this.socket.on('connect', () => {
-                        this.addActions(this.actions);
                         resolve(true);
                     });
                     this.socket.connect();
@@ -69,12 +67,12 @@ class SocketioClient {
         this.actions = actions ?? {};
         this.connected = new Promise((resolve) => {
             this.socket.on('connect', () => {
-                this.addActions(this.actions);
                 resolve(true);
             });
             this.socket.on('connect_error', this.reconnect);
             this.socket.on('disconnect', this.reconnect);
         });
+        this.addActions(this.actions);
     }
 }
 exports.SocketioClient = SocketioClient;

@@ -12,20 +12,18 @@ export class SocketioClient{
         this.actions = actions??{}
         this.connected = new Promise<boolean>((resolve) => {
             this.socket.on('connect', () => {
-                this.addActions(this.actions)
                 resolve(true)
             })
             this.socket.on('connect_error', this.reconnect)
             this.socket.on('disconnect', this.reconnect)
         })
+        this.addActions(this.actions)
     }
     reconnect = () => {
         this.connected = new Promise<boolean>((resolve) => {
             this.socket.off('connect')
-            this.removeActions(this.actions)
             setTimeout(() => {
                 this.socket.on('connect', ()=>{
-                    this.addActions(this.actions)
                     resolve(true)
                 })
                 this.socket.connect()
