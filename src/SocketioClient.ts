@@ -7,20 +7,22 @@ export class SocketioClient{
     socket!: Socket
     connected!: Promise<boolean>
     constructor(url: string, actions?: Record<string, (payload: any)=>void>){
-        this.socket = io(url)
+        this.socket = io(url, {forceNew: true})
         this.connected = new Promise<boolean>((resolve) => {
             this.socket.on('connect', () => resolve(true))
-            this.socket.on('connect_error', () => {
-                this.connected = new Promise<boolean>((resolve) => {
-                    this.socket.off('connect')
-                    setTimeout(() => {
-                        this.socket.on('connect', ()=>resolve(true))
-                        this.socket.connect()
-                    }, 1000);
-                })
-            })
+            this.socket.on('connect_error', this.reconnect)
+            this.socket.on('disconnect', this.reconnect)
         })
         this.addActions(actions??{})
+    }
+    reconnect = () => {
+        this.connected = new Promise<boolean>((resolve) => {
+            this.socket.off('connect')
+            setTimeout(() => {
+                this.socket.on('connect', ()=>resolve(true))
+                this.socket.connect()
+            }, 1000);
+        })
     }
     initializeSocket = (url: string, actions?: Record<string, (payload: any)=>void>) => {
         this.socket = io(url, {forceNew: true})

@@ -6,6 +6,15 @@ const txRx_1 = require("../../shared/txRx");
 const nanoid_1 = require("nanoid");
 class SocketioClient {
     constructor(url, actions) {
+        this.reconnect = () => {
+            this.connected = new Promise((resolve) => {
+                this.socket.off('connect');
+                setTimeout(() => {
+                    this.socket.on('connect', () => resolve(true));
+                    this.socket.connect();
+                }, 1000);
+            });
+        };
         this.initializeSocket = (url, actions) => {
             this.socket = (0, socket_io_client_1.io)(url, { forceNew: true });
             this.connected = new Promise((resolve) => {
@@ -65,18 +74,11 @@ class SocketioClient {
                 });
             });
         };
-        this.socket = (0, socket_io_client_1.io)(url);
+        this.socket = (0, socket_io_client_1.io)(url, { forceNew: true });
         this.connected = new Promise((resolve) => {
             this.socket.on('connect', () => resolve(true));
-            this.socket.on('connect_error', () => {
-                this.connected = new Promise((resolve) => {
-                    this.socket.off('connect');
-                    setTimeout(() => {
-                        this.socket.on('connect', () => resolve(true));
-                        this.socket.connect();
-                    }, 1000);
-                });
-            });
+            this.socket.on('connect_error', this.reconnect);
+            this.socket.on('disconnect', this.reconnect);
         });
         this.addActions(actions ?? {});
     }
