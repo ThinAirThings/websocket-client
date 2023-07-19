@@ -67,14 +67,12 @@ class SocketioClient {
         };
         this.socket = (0, socket_io_client_1.io)(url);
         this.connected = new Promise((resolve) => {
-            let resolver = () => resolve(true);
-            this.socket.on('connect', resolver);
+            this.socket.on('connect', () => resolve(true));
             this.socket.on('connect_error', () => {
                 this.connected = new Promise((resolve) => {
-                    this.socket.off('connect', resolver);
-                    resolver = () => resolve(true);
+                    this.socket.off('connect');
                     setTimeout(() => {
-                        this.socket.on('connect', resolver);
+                        this.socket.on('connect', () => resolve(true));
                         this.socket.connect();
                     }, 1000);
                 });
