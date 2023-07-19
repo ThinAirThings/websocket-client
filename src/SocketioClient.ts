@@ -11,7 +11,8 @@ export class SocketioClient{
         this.connected = new Promise<boolean>((resolve) => {
             let resolver = () => resolve(true)
             this.socket.on('connect', resolver)
-            this.socket.on('connect_error', () => {
+            this.socket.on('connect_error', (err) => {
+                console.log("Connection Error Occurred", err)
                 this.connected = new Promise<boolean>((resolve) => {
                     this.socket.off('connect', resolver)
                     resolver = () => resolve(true)
