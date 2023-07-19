@@ -10,7 +10,7 @@ export class SocketioClient{
         this.initializeSocket(url, actions)
     }
     initializeSocket = (url: string, actions?: Record<string, (payload: any)=>void>) => {
-        this.socket = io(url)
+        this.socket = io(url, {forceNew: true})
         this.connected = new Promise<boolean>((resolve) => {
             this.socket.on('connect', () => resolve(true))
             this.socket.on('connect_error', () => {
