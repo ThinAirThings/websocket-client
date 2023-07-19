@@ -65,7 +65,22 @@ class SocketioClient {
                 });
             });
         };
-        this.initializeSocket(url, actions);
+        this.socket = (0, socket_io_client_1.io)(url);
+        this.connected = new Promise((resolve) => {
+            let resolver = () => resolve(true);
+            this.socket.on('connect', resolver);
+            this.socket.on('connect_error', () => {
+                this.connected = new Promise((resolve) => {
+                    this.socket.off('connect', resolver);
+                    resolver = () => resolve(true);
+                    setTimeout(() => {
+                        this.socket.on('connect', resolver);
+                        this.socket.connect();
+                    }, 1000);
+                });
+            });
+        });
+        this.addActions(actions ?? {});
     }
 }
 exports.SocketioClient = SocketioClient;
