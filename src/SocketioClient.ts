@@ -19,6 +19,7 @@ export class SocketioClient{
                 }, 5000)
             })
             this.socket.on('disconnect', () => {
+                console.log("Disconnected")
                 setTimeout(() => {
                     this.initializeSocket(url, actions)
                 }, 5000)
