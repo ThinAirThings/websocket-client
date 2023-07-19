@@ -6,33 +6,19 @@ const txRx_1 = require("../../shared/txRx");
 const nanoid_1 = require("nanoid");
 class SocketioClient {
     constructor(url, actions) {
+        this.actions = {};
         this.reconnect = () => {
             this.connected = new Promise((resolve) => {
                 this.socket.off('connect');
+                this.removeActions(this.actions);
                 setTimeout(() => {
-                    this.socket.on('connect', () => resolve(true));
+                    this.socket.on('connect', () => {
+                        this.addActions(this.actions);
+                        resolve(true);
+                    });
                     this.socket.connect();
                 }, 1000);
             });
-        };
-        this.initializeSocket = (url, actions) => {
-            this.socket = (0, socket_io_client_1.io)(url, { forceNew: true });
-            this.connected = new Promise((resolve) => {
-                this.socket.on('connect', () => resolve(true));
-                this.socket.on('connect_error', () => {
-                    setTimeout(() => {
-                        this.initializeSocket(url, actions);
-                    }, 5000);
-                });
-                this.socket.on('disconnect', () => {
-                    console.log("Disconnected");
-                    setTimeout(() => {
-                        console.log("Reconnecting");
-                        this.initializeSocket(url, actions);
-                    }, 5000);
-                });
-            });
-            this.addActions(actions ?? {});
         };
         this.addAction = (action, callback) => {
             this.socket.on((0, txRx_1.rxToTx)(action), callback);
@@ -43,6 +29,11 @@ class SocketioClient {
         this.addActions = (actions) => {
             for (const [action, callback] of Object.entries(actions)) {
                 this.socket.on((0, txRx_1.rxToTx)(action), callback);
+            }
+        };
+        this.removeActions = (actions) => {
+            for (const [action, callback] of Object.entries(actions)) {
+                this.socket.off((0, txRx_1.rxToTx)(action), callback);
             }
         };
         this.sendMessage = async (action, payload) => {
@@ -75,12 +66,15 @@ class SocketioClient {
             });
         };
         this.socket = (0, socket_io_client_1.io)(url, { forceNew: true });
+        this.actions = actions ?? {};
         this.connected = new Promise((resolve) => {
-            this.socket.on('connect', () => resolve(true));
+            this.socket.on('connect', () => {
+                this.addActions(this.actions);
+                resolve(true);
+            });
             this.socket.on('connect_error', this.reconnect);
             this.socket.on('disconnect', this.reconnect);
         });
-        this.addActions(actions ?? {});
     }
 }
 exports.SocketioClient = SocketioClient;
