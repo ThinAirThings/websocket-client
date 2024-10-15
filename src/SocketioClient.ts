@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client"
-import { rxToTx } from "../../shared/txRx"
 import { nanoid } from "nanoid"
 import { IncomingWebsocketRequestMessage } from "./websocketFetch"
+import { rxToTx } from "@thinairthings/txrx"
 
 export class SocketioClient{
     socket!: Socket

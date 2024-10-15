@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2020",
-    "outDir": "dist",
     "strict": true,
-    "esModuleInterop": true,
-    "declaration": true
+    "outDir": "dist",
+    "rootDir": "src",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "lib": [
+        "ESNext",
+        "DOM"
+    ],
   },
-  "include": ["src/**/*.ts", "src/SocketioClient.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
